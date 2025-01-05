@@ -85,8 +85,11 @@ def handle_vocab_predict():
         client_id = request.sid
         client_data = connected_clients.get(client_id)
         if not client_data:
-            return None
+            return []
 
+        if client_data["all_landmarks"] == []:
+            return []
+        
         # Keep the following code(line) for debugging purposes
         # pd.concat(client_data["all_landmarks"]).reset_index(drop=True).to_parquet("./output/output.parquet")
         all_landmarks_df = pd.concat(client_data["all_landmarks"]).reset_index(drop=True)
@@ -140,6 +143,51 @@ def create_vocab_framedata_df(results, frame, format):
         print(f"Error at create_vocab_framedata_df(): {str(e)}")
         return pd.DataFrame()
 
+# NOTE: The following code is for the REST API mode insted of using SocketIO
+@app.route('/api/vocab-predict', methods=['POST'])
+def handle_vocab_predict():
+    try:
+        data = request.get_json()
+        if not data or 'allLandmarks' not in data:
+            return jsonify([])
+
+        frame = 0
+        all_landmarks = []
+        landmarks_list = data['allLandmarks']
+
+        if not landmarks_list: 
+            return jsonify([])
+
+        # This process is a bit time-consuming, but since it is CPU-bound, 
+        # using Python's multithreading will not make it faster due to GIL.
+        for landmarks in landmarks_list:
+            frame += 1
+            landmarks_df = create_vocab_framedata_df(landmarks, frame, format)
+            all_landmarks.append(landmarks_df)
+
+        results = vocab_predict(all_landmarks)
+        return jsonify(results)
+
+    except Exception as e:
+        print(f"Error at handle_vocab_predict(): {str(e)}")
+
+# NOTE: The following code is for the REST API mode insted of using SocketIO
+def vocab_predict(all_landmarks):
+    try:
+        all_landmarks_df = pd.concat(all_landmarks).reset_index(drop=True)
+        results = vocab_predictor.predict_sign(all_landmarks_df)
+    
+        if results is not None:
+            for result in results:
+                print(f"Prediction result: {result['sign']}, {result['confidence'] * 100:.2f}%")
+
+        gc.collect()
+        return results
+    
+    except Exception as e:
+        print(f"Error at vocab_predict(): {str(e)}")
+        return None
+    
 if __name__ == "__main__":
     print("Starting server...")
     socketio.run(app, host=HOST, port=PORT, debug=False)

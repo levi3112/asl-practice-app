@@ -17,7 +17,7 @@ import {
 } from "@mediapipe/holistic";
 import { drawConnectors, drawLandmarks } from "@mediapipe/drawing_utils";
 import { io, Socket } from "socket.io-client";
-import { PredictSignResponse } from '../../types/common';
+import { PredictSignResponse, Landmarks } from '../../types/common';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StopIcon from '@mui/icons-material/Stop';
 import VideocamIcon from '@mui/icons-material/Videocam';
@@ -28,7 +28,9 @@ import wrongSound from '../../assets/quiz-wrong.mp3';
 
 const correctAudio = new Audio(correctSound);
 const wrongAudio = new Audio(wrongSound);
-const SERVER_ADDRESS = import.meta.env.VITE_VOCAB_SERVER_ADDRESS;
+const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS;
+const API_URL = SERVER_ADDRESS + import.meta.env.VITE_VOCAB_API_PREDICT;
+const MODE= import.meta.env.VITE_MODE;
 
 export const VocabQuiz: React.FC = () => {
   const navigate = useNavigate();
@@ -47,8 +49,11 @@ export const VocabQuiz: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const holisticRef = useRef<Holistic | null>(null);
 
+  // NOTE: This state is only for REST API mode (instead of using socket.io)
+  const [allLandmarks, setAllLandmarks] = useState<Landmarks[]>([]);
+
   useEffect(() => {
-    if (!socketRef.current) {
+    if (!socketRef.current && MODE === "SOCKETIO") {
       socketRef.current = io(SERVER_ADDRESS, {
         transports: ["websocket"],
         withCredentials: true,
@@ -105,13 +110,20 @@ export const VocabQuiz: React.FC = () => {
         || !isRecordingRef.current // Skip frames if not recording
       ) return;
 
-      const landmark = {
+      const landmarks: Landmarks = {
         faceLandmarks: results.faceLandmarks || null,
         poseLandmarks: results.poseLandmarks || null,
         leftHandLandmarks: results.leftHandLandmarks || null,
         rightHandLandmarks: results.rightHandLandmarks || null,
       };
-      socketRef.current?.emit("vocab-landmarkers", landmark);
+
+      if (MODE === "RESTAPI") {
+        setAllLandmarks(prev => [...prev, landmarks]);
+      } else if (MODE === "SOCKETIO") {
+        socketRef.current?.emit("vocab-landmarkers", landmarks);
+      } else{
+        socketRef.current?.emit("vocab-landmarkers", landmarks);
+      }
     };
 
     const processFrame = async () => {
@@ -210,21 +222,45 @@ export const VocabQuiz: React.FC = () => {
         if (bestMatchedSign === selectedWordList[quizNumber].sign) {
           setResult(true);
           selectedWordList[quizNumber].isCorrect = true;
-          correctAudio.play();
+          playSound(correctAudio);
+          console.log("Correct!");
         } else {
           setResult(false);
           selectedWordList[quizNumber].isCorrect = false;
-          wrongAudio.play();
+          playSound(wrongAudio);
+          console.log("Incorrect!");
         }
       } else {
-        // setAnsweredSign(predicts[0].sign);
         setAnsweredSign("No match found");
         setResult(false);
         selectedWordList[quizNumber].isCorrect = false;
-        wrongAudio.play();
+        playSound(wrongAudio);
+        console.log("No match found");
       }
     }
   }, [predicts, selectedWordList, quizNumber]);
+
+  useEffect (() => {
+    if (!isRecording) {
+      if (MODE === "RESTAPI") {
+        handleAllLandmarksSubmit().then((predicts: PredictSignResponse) => {
+          if (predicts.length === 0) return
+          setPredicts(predicts);
+          setAllLandmarks([]);
+        });
+      } else if (MODE === "SOCKETIO") {
+        socketRef.current?.emit("vocab-predict", (predicts: PredictSignResponse) => {
+          if (predicts.length === 0) return
+          setPredicts(predicts);
+        });
+      } else {
+        socketRef.current?.emit("vocab-predict", (predicts: PredictSignResponse) => {
+          if (predicts.length === 0) return
+          setPredicts(predicts);
+        });
+      }
+    }
+  }, [isRecording])
 
   const handleRecordingToggle = async () => {
     setIsRecording((prev) => {
@@ -232,11 +268,6 @@ export const VocabQuiz: React.FC = () => {
       console.log("Recording:", isRecordingRef.current);
       return isRecordingRef.current;
     });
-    if (!isRecordingRef.current) {
-      socketRef.current?.emit("vocab-predict", (predicts: PredictSignResponse) => {
-        setPredicts(predicts);
-      });
-    }
   }
 
   const handlePrevButtonClick = () => {
@@ -267,6 +298,28 @@ export const VocabQuiz: React.FC = () => {
   const handleHistoryBack = () => {
    navigate(-1); 
   }
+
+  const playSound = (audio: HTMLAudioElement) => {
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play();
+  }
+
+  // This function is only for REST API mode (instead of using socket.io)
+  const handleAllLandmarksSubmit = async () => {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json',},
+        body: JSON.stringify({ allLandmarks: allLandmarks }),
+      });
+      const data = await response.json();
+      return data;
+
+    } catch (error) {
+      console.error("Error at handleAllLandmarksSubmit():", error);
+    }
+  };
 
   return (
     <Box sx={{

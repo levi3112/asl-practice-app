@@ -1,3 +1,12 @@
+import { LandmarkList } from '@mediapipe/holistic';
+
+export type Landmarks = {
+  faceLandmarks: LandmarkList | null;
+  poseLandmarks: LandmarkList | null;
+  leftHandLandmarks: LandmarkList | null;
+  rightHandLandmarks: LandmarkList | null;
+};
+
 export type PredictState = {
   value: string | null;
   timestamp: number;

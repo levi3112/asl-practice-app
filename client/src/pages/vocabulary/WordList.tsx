@@ -5,7 +5,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { WordListItem } from '../../types/common';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
-const API_URL = import.meta.env.VITE_VOCAB_API_URL
+const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS;
+const API_URL = SERVER_ADDRESS + import.meta.env.VITE_VOCAB_API_CONTENTS
 const MAX_WORD_NUM = import.meta.env.VITE_VOCAB_WORD_NUM;
 
 const WordList: React.FC = () => {

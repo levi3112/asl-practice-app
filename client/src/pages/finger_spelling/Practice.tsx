@@ -15,7 +15,8 @@ import YouTubeEmbedWithStartEnd from "../../components/YouTubeEmbedWithStartEnd"
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { FingerSpellingYTData } from "../../types/common";
 
-const API_URL = import.meta.env.VITE_FS_API_URL;
+const SERVER_ADDRESS = import.meta.env.VITE_SERVER_ADDRESS;
+const API_URL = SERVER_ADDRESS + import.meta.env.VITE_FS_API_CONTENTS;
 
 const Practice: React.FC = () => {
   const navigate = useNavigate();
