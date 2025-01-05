@@ -136,6 +136,7 @@ const FSQuiz: React.FC = () => {
 
       const results = await gestureRecognizerRef.current.recognizeForVideo(video, Date.now());
       if (isRecordingRef.current) {
+        isRecordingRef.current = false;
         const detectedGesture = results.gestures[0]?.[0]?.["categoryName"] || "No match found";
         // Ignore other than A to Z. (J and Z are also ignored.)
         updatePredicts(/^[A-Z]$/.test(detectedGesture) ? detectedGesture : "No match found");
@@ -208,11 +209,11 @@ const FSQuiz: React.FC = () => {
         if (predicts.value === newList[quizNumber].sign) {
           setResult(true);
           newList[quizNumber].isCorrect = true;
-          correctAudio.play();
+          playSound(correctAudio);
         } else {
           setResult(false);
           newList[quizNumber].isCorrect = false;
-          wrongAudio.play();
+          playSound(wrongAudio);
         }
         return newList;
       });
@@ -229,7 +230,7 @@ const FSQuiz: React.FC = () => {
           setIsRecording(false);
           isRecordingRef.current = false;
           console.log("Recording stopped.");
-        }, 50);
+        }, 100);
       }
       return isRecordingRef.current;
     });
@@ -262,6 +263,12 @@ const FSQuiz: React.FC = () => {
 
   const handleHistoryBack = () => {
    navigate(-1); 
+  }
+
+  const playSound = (audio: HTMLAudioElement) => {
+    audio.pause();
+    audio.currentTime = 0;
+    audio.play();
   }
 
   return (
