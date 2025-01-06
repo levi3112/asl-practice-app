@@ -1,5 +1,4 @@
 # ASL Practice App
-
 This app is designed as a learning tool that allows users to check their proficiency in American Sign Language (ASL) through AI-powered quizzes after engaging with ASL content on YouTube. For ASL recognition, I utilized a top-performing model from a Kaggle competition and referenced educational content from YouTube channels such as ASLU and Start ASL. I integrated these resources to create this app as a Proof of Concept (PoC) to demonstrate the technical feasibility of the idea. While the UI/UX is still in its initial stage and has room for improvement, the focus of this project was on showcasing the underlying technical capabilities.
 
 Also, the gesture classification model used in this project references the models created by [@hoyso48](https://www.kaggle.com/hoyso48) and [@ohkawa3](https://www.kaggle.com/chack3). I was truly impressed by the exceptional quality. I sincerely appreciate the generosity in sharing both the models and the Jupyter Notebook on Kaggle.
