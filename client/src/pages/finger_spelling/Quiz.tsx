@@ -52,7 +52,7 @@ const FSQuiz: React.FC = () => {
   useEffect(() => {
     const createQuiz = async () => {
       // Select 10 random characters from A to Z. (* J and Z are excluded.)
-      const characters = "ABCDEFGHIKLMNOPQRSTUVWXY";
+      const characters = "ABCDEFGHILMNOPRSTUVWXY";
       const quizCharacterList = Array.from({ length: NUM_OF_QUIZ }, (_, i) => ({
         id: i,
         sign: characters[Math.floor(Math.random() * characters.length)],
