@@ -18,10 +18,10 @@ This interactive format allows users to actively reinforce their ASL skills thro
 ## App Demo
 
 ### 1. Finger Spelling Practice
-[![Finger Spelling Practice](https://img.youtube.com/vi/1TnvyT-Hv9U/0.jpg)](https://www.youtube.com/watch?v=1TnvyT-Hv9U)
+[![Finger Spelling Practice](https://img.youtube.com/vi/b0ze2TyXaEc/0.jpg)](https://youtu.be/b0ze2TyXaEc)
 
 ### 2. Basic Vocabulary Practice
-[![Basic Vocabulary Practice](https://img.youtube.com/vi/yjChG0lpNZ4/0.jpg)](https://www.youtube.com/watch?v=yjChG0lpNZ4)
+[![Basic Vocabulary Practice](https://img.youtube.com/vi/PfMti7SdjAI/0.jpg)](https://youtu.be/PfMti7SdjAI)
 
 ## Technology Stack
 
@@ -55,7 +55,7 @@ The Kaggle ASL competition model used in this project was designed for implement
 
 By the way, when the frame data accumulated on the back end is visualized, it appears as follows. This serves as the input data for the gesture recognition classification model.
 
-[Frame Data Visualization](https://www.youtube.com/watch?v=AgZ0c_rVt80){:target="_blank"}
+[![Finger Spelling Practice](https://img.youtube.com/vi/AgZ0c_rVt80/0.jpg)](https://youtu.be/AgZ0c_rVt80)
 
 #### *Challenges with REST API:*
 Initially, the front-end recorded and accumulated frame data, sending it to the back-end in bulk via a POST request, but the server-side preprocessing required before executing the model introduced a slight delay, resulting in a noticeable lag between performing gestures and receiving recognition results.
