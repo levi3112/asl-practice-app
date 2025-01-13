@@ -17,10 +17,10 @@ This interactive format allows users to actively reinforce their ASL skills thro
 
 ## App Demo
 
-### 1. Finger Spelling Practice
+### [1. Finger Spelling Practice](https://youtu.be/b0ze2TyXaEc)
 [![Finger Spelling Practice](https://img.youtube.com/vi/b0ze2TyXaEc/0.jpg)](https://youtu.be/b0ze2TyXaEc)
 
-### 2. Basic Vocabulary Practice
+### [2. Basic Vocabulary Practice](https://youtu.be/PfMti7SdjAI)
 [![Basic Vocabulary Practice](https://img.youtube.com/vi/PfMti7SdjAI/0.jpg)](https://youtu.be/PfMti7SdjAI)
 
 ## Technology Stack
