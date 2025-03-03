@@ -1,5 +1,5 @@
 HOST = "127.0.0.1"
-PORT = 5000
+PORT = 5132
 
 # Finger Spelling
 FS_YT_FILE_PATH = "./fs_yt.json"
